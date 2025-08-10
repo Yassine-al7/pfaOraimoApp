@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/oraimo.jpg') }}">
+</head>
+<body>
+    <h1>Tableau de Bord YOLO</h1>
+    <div class="metrics-container">
+
+        {% for model, values in metrics.items() %}
+        <div class="model-card">
+            <h2>{{ model }}</h2>
+
+            <div class="curves">
+                <img src="{{ url_for('static', filename='images/' + model|lower + '_confidence.png') }}" alt="Confidence">
+                <img src="{{ url_for('static', filename='images/' + model|lower + '_precision-confidence.png') }}" alt="Precision vs Confidence">
+                <img src="{{ url_for('static', filename='images/' + model|lower + '_recall-confidence.png') }}" alt="Recall vs Confidence">
+                <img src="{{ url_for('static', filename='images/' + model|lower + '_precision-recall.png') }}" alt="Precision vs Recall">
+            </div>
+
+            <ul>
+                <li><strong>mAP :</strong> {{ values.mAP }}</li>
+                <li><strong>Precision :</strong> {{ values.Precision }}</li>
+                <li><strong>Recall :</strong> {{ values.Recall }}</li>
+            </ul>
+        </div>
+        {% endfor %}
+    </div>
+    <a href="/detect" class="button">Détecter une Image</a>
+</body>
+</html>

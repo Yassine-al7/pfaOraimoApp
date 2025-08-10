@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Détection d’image</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/oraimo.jpg') }}">
+</head>
+<body>
+    <h1>Détection par YOLO</h1>
+    <form method="post" enctype="multipart/form-data">
+        <label>Choisis un modèle :</label>
+        <select name="model">
+            <option value="YOLOv8">YOLOv8</option>
+            <option value="YOLOv9">YOLOv9</option>
+            <option value="YOLOv10">YOLOv10</option>
+            <option value="YOLOv11">YOLOv11</option>
+        </select><br><br>
+        <input type="file" name="image" accept="image/*" required>
+        <input type="submit" value="Détecter">
+    </form>
+
+    {% if image_path %}
+    <h2>Résultat avec {{ model }}</h2>
+    <img src="{{ image_path }}" width="600">
+    {% endif %}
+
+    <a href="/" class="button">Retour aux Résultats</a>
+</body>
+</html>
