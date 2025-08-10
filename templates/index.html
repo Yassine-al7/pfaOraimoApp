@@ -2,32 +2,225 @@
 <html>
 <head>
     <title>Dashboard</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/style.css?v=3.0">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/oraimo.jpg') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
     <h1>Tableau de Bord YOLO</h1>
-    <div class="metrics-container">
-
-        {% for model, values in metrics.items() %}
-        <div class="model-card">
-            <h2>{{ model }}</h2>
-
-            <div class="curves">
-                <img src="{{ url_for('static', filename='images/' + model|lower + '_confidence.png') }}" alt="Confidence">
-                <img src="{{ url_for('static', filename='images/' + model|lower + '_precision-confidence.png') }}" alt="Precision vs Confidence">
-                <img src="{{ url_for('static', filename='images/' + model|lower + '_recall-confidence.png') }}" alt="Recall vs Confidence">
-                <img src="{{ url_for('static', filename='images/' + model|lower + '_precision-recall.png') }}" alt="Precision vs Recall">
-            </div>
-
-            <ul>
-                <li><strong>mAP :</strong> {{ values.mAP }}</li>
-                <li><strong>Precision :</strong> {{ values.Precision }}</li>
-                <li><strong>Recall :</strong> {{ values.Recall }}</li>
-            </ul>
-        </div>
-        {% endfor %}
+    
+    <!-- Floating Action Button -->
+    <div class="floating-action-btn" onclick="window.location.href='/detect'">
+        <div class="fab-icon">🔍</div>
+        <div class="fab-text">Détecter</div>
+        <div class="fab-ripple"></div>
     </div>
-    <a href="/detect" class="button">Détecter une Image</a>
+    
+    <!-- Model Selection Buttons -->
+    <div class="model-selector">
+        <h2 class="selector-title">Sélectionnez un modèle pour voir ses performances</h2>
+        <div class="model-buttons">
+            {% for model, values in metrics.items() %}
+            <button class="model-btn" data-model="{{ model|lower }}" onclick="showModel('{{ model }}')">
+                <div class="btn-content">
+                    <div class="btn-icon">🤖</div>
+                    <div class="btn-text">
+                        <h3>{{ model }}</h3>
+                        <p>mAP: {{ values.mAP }}</p>
+                    </div>
+                </div>
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Central Action Hub (Alternative Design) -->
+    <div class="action-hub">
+        <div class="hub-content">
+            <div class="hub-icon">🎯</div>
+            <h3>Prêt à analyser vos images ?</h3>
+            <p>Utilisez nos modèles YOLO pour détecter des objets dans vos images</p>
+            <a href="/detect" class="hub-button">
+                <span class="hub-btn-icon">🚀</span>
+                <span class="hub-btn-text">Commencer la Détection</span>
+                <div class="hub-btn-glow"></div>
+            </a>
+        </div>
+        <div class="hub-particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+    </div>
+
+    <!-- Model Details Container -->
+    <div id="model-details" class="model-details hidden">
+        <div class="model-info">
+            <h2 id="model-title">Sélectionnez un modèle</h2>
+            <div class="close-btn" onclick="hideModel()">✕</div>
+        </div>
+        
+        <div class="model-content">
+            <!-- Charts Container -->
+            <div class="charts-container">
+                <div class="chart-item">
+                    <h4>Confidence Curve</h4>
+                    <img id="confidence-img" src="/placeholder.svg" alt="Confidence" class="chart-img">
+                </div>
+                <div class="chart-item">
+                    <h4>Precision vs Confidence</h4>
+                    <img id="precision-confidence-img" src="/placeholder.svg" alt="Precision vs Confidence" class="chart-img">
+                </div>
+                <div class="chart-item">
+                    <h4>Recall vs Confidence</h4>
+                    <img id="recall-confidence-img" src="/placeholder.svg" alt="Recall vs Confidence" class="chart-img">
+                </div>
+                <div class="chart-item">
+                    <h4>Precision vs Recall</h4>
+                    <img id="precision-recall-img" src="/placeholder.svg" alt="Precision vs Recall" class="chart-img">
+                </div>
+            </div>
+            
+            <!-- Metrics Container -->
+            <div class="metrics-display">
+                <div class="metric-card">
+                    <div class="metric-icon">🎯</div>
+                    <div class="metric-info">
+                        <h4>mAP</h4>
+                        <span id="map-value">-</span>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">📊</div>
+                    <div class="metric-info">
+                        <h4>Precision</h4>
+                        <span id="precision-value">-</span>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">🔍</div>
+                    <div class="metric-info">
+                        <h4>Recall</h4>
+                        <span id="recall-value">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Welcome Message (shown when no model is selected) -->
+    <div id="welcome-message" class="welcome-message">
+        <div class="welcome-content">
+            <div class="welcome-icon">🚀</div>
+            <h3>Bienvenue sur le Dashboard YOLO</h3>
+            <p>Cliquez sur un modèle ci-dessus pour voir ses performances détaillées et ses courbes d'analyse.</p>
+            <div class="features">
+                <div class="feature">
+                    <span class="feature-icon">📈</span>
+                    <span>Courbes de performance</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">🎯</span>
+                    <span>Métriques détaillées</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">🔬</span>
+                    <span>Analyse comparative</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Store model data
+        const modelData = {{ metrics|tojson }};
+        
+        function showModel(modelName) {
+            // Hide welcome message
+            document.getElementById('welcome-message').classList.add('hidden');
+            
+            // Show model details
+            const detailsContainer = document.getElementById('model-details');
+            detailsContainer.classList.remove('hidden');
+            
+            // Update title
+            document.getElementById('model-title').textContent = modelName + ' - Analyse des Performances';
+            
+            // Update images
+            const modelLower = modelName.toLowerCase();
+            document.getElementById('confidence-img').src = `/static/images/${modelLower}_confidence.png`;
+            document.getElementById('precision-confidence-img').src = `/static/images/${modelLower}_precision-confidence.png`;
+            document.getElementById('recall-confidence-img').src = `/static/images/${modelLower}_recall-confidence.png`;
+            document.getElementById('precision-recall-img').src = `/static/images/${modelLower}_precision-recall.png`;
+            
+            // Update metrics
+            const metrics = modelData[modelName];
+            document.getElementById('map-value').textContent = metrics.mAP;
+            document.getElementById('precision-value').textContent = metrics.Precision;
+            document.getElementById('recall-value').textContent = metrics.Recall;
+            
+            // Update active button
+            document.querySelectorAll('.model-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-model="${modelLower}"]`).classList.add('active');
+            
+            // Smooth scroll to details
+            detailsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        function hideModel() {
+            // Hide model details
+            document.getElementById('model-details').classList.add('hidden');
+            
+            // Show welcome message
+            document.getElementById('welcome-message').classList.remove('hidden');
+            
+            // Remove active state from buttons
+            document.querySelectorAll('.model-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Scroll back to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // Add loading states for images
+        document.querySelectorAll('.chart-img').forEach(img => {
+            img.addEventListener('load', function() {
+                this.classList.add('loaded');
+            });
+            
+            img.addEventListener('error', function() {
+                this.src = '/placeholder.svg?height=200&width=300&text=Chart+Not+Available';
+                this.classList.add('error');
+            });
+        });
+
+        // Floating Action Button Animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const fab = document.querySelector('.floating-action-btn');
+            
+            // Add click ripple effect
+            fab.addEventListener('click', function(e) {
+                const ripple = this.querySelector('.fab-ripple');
+                ripple.style.animation = 'none';
+                ripple.offsetHeight; // Trigger reflow
+                ripple.style.animation = 'ripple 0.6s ease-out';
+            });
+            
+            // Add scroll behavior
+            let lastScrollTop = 0;
+            window.addEventListener('scroll', function() {
+                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                if (scrollTop > lastScrollTop && scrollTop > 100) {
+                    // Scrolling down
+                    fab.style.transform = 'translateY(100px)';
+                } else {
+                    // Scrolling up
+                    fab.style.transform = 'translateY(0)';
+                }
+                lastScrollTop = scrollTop;
+            });
+        });
+    </script>
 </body>
 </html>

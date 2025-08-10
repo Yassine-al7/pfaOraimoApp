@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Détection d’image</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <title>Détection d'image</title>
+    <link rel="stylesheet" href="/static/style.css?v={{ moment().timestamp }}">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/oraimo.jpg') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
     <h1>Détection par YOLO</h1>
@@ -18,12 +19,10 @@
         <input type="file" name="image" accept="image/*" required>
         <input type="submit" value="Détecter">
     </form>
-
     {% if image_path %}
     <h2>Résultat avec {{ model }}</h2>
     <img src="{{ image_path }}" width="600">
     {% endif %}
-
     <a href="/" class="button">Retour aux Résultats</a>
 </body>
 </html>
