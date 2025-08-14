@@ -135,7 +135,7 @@
 
     <script>
         // Store model data
-        const modelData = {{ metrics|tojson }};
+        const modelData = JSON.parse('{{ metrics | tojson | safe }}');
         
         function showModel(modelName) {
             // Hide welcome message
